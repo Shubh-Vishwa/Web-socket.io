@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat App</title>
+</head>
+<body>
+    <script src="http://localhost:3000/socket.io/socket.io.js"></script>
+
+    <script>
+        // socket code in js .
+        const socket = io.connect('http://localhost:3000');
+    </script>
+</body>
+</html>
+
+<!-- note -->
+ <!-- 
+1.  The client-side code is written in JavaScript and is executed on the client-sid
+2.  The client-side code is responsible for establishing a connection to the server and sending/receiving
+messages to/from the server.
+ -->
