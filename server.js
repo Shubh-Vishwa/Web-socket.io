@@ -1,14 +1,14 @@
 import express from "express";
+import { Server } from "socket.io";
 import cors from "cors";
 import http from "http";
-import { Server } from "socket.io";
-import { Socket } from "dgram";
 
 const app = express();
 
-// 1:create a server using http
+// 1. Creating server using http.
 const server = http.createServer(app);
-// 2: create a socket server
+
+// 2. Create socket server.
 const io = new Server(server, {
   cors: {
     origin: "*",
@@ -16,16 +16,20 @@ const io = new Server(server, {
   },
 });
 
-//3:use socket events
-io.on("connection", (socket) => {
-  console.log("connection is established.");
+// 3. Use socket events.
 
-  //emit event to all connected clients
+io.on("connection", (socket) => {
+  console.log("Connection is established");
+  socket.on("new_message", (message) => {
+    // broadcast this message to all the clients.
+    socket.broadcast.emit("broadcast_message", message);
+  });
+
   socket.on("disconnect", () => {
-    console.log("connection is  disconnected");
+    console.log("Connection is disconnected");
   });
 });
 
-server.listen("3000", () => {
-  console.log("server is running on port http://localhost:3000");
+server.listen(3000, () => {
+  console.log("App is listening on 3000");
 });

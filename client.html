@@ -1,23 +1,124 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Chat App</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            margin: 0;
+            background-color: #f0f2f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        #chat-container {
+            background-color: #ffffff;
+            width: 400px;
+            max-height: 600px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        #message-list {
+            flex: 1;
+            padding: 16px;
+            overflow-y: auto;
+            border-bottom: 1px solid #ddd;
+        }
+
+        #message-list div {
+            margin-bottom: 10px;
+            padding: 10px 14px;
+            border-radius: 18px;
+            background-color: #e4e6eb;
+            max-width: 75%;
+            word-wrap: break-word;
+        }
+
+        #message-input {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            outline: none;
+            font-size: 16px;
+        }
+
+        #send-message {
+            padding: 12px 16px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.2s ease-in-out;
+        }
+
+        #send-message:hover {
+            background-color: #0056b3;
+        }
+
+        .input-container {
+            display: flex;
+            border-top: 1px solid #ddd;
+        }
+    </style>
 </head>
+
 <body>
+
+    <div id="chat-container">
+        <div id="message-list">
+            <!-- list will contain messages -->
+        </div>
+        <div class="input-container">
+            <input type="text" id="message-input" placeholder="Type a message...">
+            <button id="send-message">Send</button>
+        </div>
+    </div>
+
     <script src="http://localhost:3000/socket.io/socket.io.js"></script>
 
     <script>
-        // socket code in js .
         const socket = io.connect('http://localhost:3000');
+        const messageInput = document.getElementById("message-input");
+        const messageList = document.getElementById("message-list");
+        const sendButton = document.getElementById("send-message");
+
+        sendButton.addEventListener('click', function () {
+            const message = messageInput.value.trim();
+            if (message) {
+                socket.emit('new_message', message);
+
+                const messageElement = document.createElement("div");
+                messageElement.innerText = "You: " + message;
+                messageElement.style.backgroundColor = '#d1e7dd'; // user's message styling
+                messageElement.style.alignSelf = 'flex-end';
+                messageElement.style.textAlign = 'right';
+                messageList.appendChild(messageElement);
+                messageList.scrollTop = messageList.scrollHeight;
+                messageInput.value = '';
+            }
+        });
+
+        socket.on('broadcast_message', (message) => {
+            const messageElement = document.createElement("div");
+            messageElement.innerText = "Stranger: " + message;
+            messageList.appendChild(messageElement);
+            messageList.scrollTop = messageList.scrollHeight;
+        });
     </script>
 </body>
-</html>
 
-<!-- note -->
- <!-- 
-1.  The client-side code is written in JavaScript and is executed on the client-sid
-2.  The client-side code is responsible for establishing a connection to the server and sending/receiving
-messages to/from the server.
- -->
+</html>
